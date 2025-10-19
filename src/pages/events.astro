@@ -1,32 +1,169 @@
 ---
 import Card from '../components/Card.astro';
-import type Event from '../lib/events';
 import fetchApi from '../lib/strapi';
+import type Title from '../interfaces/title';
+import Layout from '../layouts/Layout.astro';
+import type EventItem from '../interfaces/event';
 
-const events = await fetchApi<Event[]>({
-    endpoint: 'events?populate=coverImage',
-    wrappedByKey: 'data',
-})
+const events = await fetchApi<EventItem[]>({
+  endpoint: 'events?populate=coverImage&sort=date:asc',
+  wrappedByKey: 'data',
+});
 
+const events_titles = await fetchApi<Title[]>({
+  endpoint: 'titles?filters[slug][$in][0]=kommende&filters[slug][$in][1]=arrangementer',
+  wrappedByKey: 'data',
+});
 ---
 
-<main>
-    <h1 class="title text-center text-4xl pt-6">Arrangementer</h1>
-    <p class="description text-center">to be continued</p>
-    <img src="https://cdn11.bigcommerce.com/s-t04x4i8lh4/images/stencil/original/uploaded_images/puppies-birthday-party.jpg?t=1667061381" alt="h">
-    <!-- <ul>
-      {
-        events.map((event: Event) => (
-          <li>
-            <Card
-              title={event.title}
-              body={event.description}
-              href={`/events/${event.id}`}
-            />
-            <img src={`${import.meta.env.STRAPI_URL}${event.coverImage.url}`} alt="Event cover" />
-          </li>
-        ))
-      }
-    </ul> -->
-  </main>
+<Layout title="Realfagskjelleren" navbarTextColor="#FFFFFF">
+    <img src="public/flekkV.svg" alt="flekk venstre" class="float-left">
+    <main>
+      <img src="flekkOH.svg" alt="" class="float-right">
+      <div class="title">
+          <h1 class="pt-44 text-center text-white text-4xl leading-tight">
+              <span class="block text-7xl">{events_titles[0].Title}</span>
+              <span class="pt-4 text-7xl block -mt-1">{events_titles[1].Title}</span>
+          </h1>
+      </div>
+    
+      <ul class="mx-auto mt-10 max-w-5xl space-y-8 px-4">
+  {
+    events.map((e: EventItem) => {
+      const href = `/events/${e.slug ?? e.id}`;
+
+      const date = e.date ? new Date(e.date) : null;
+      const month = date
+        ? date.toLocaleString('nb-NO', { month: 'short' }).toUpperCase()
+        : '';
+      const day = date ? date.toLocaleString('nb-NO', { day: '2-digit' }) : '';
+      const time = date
+        ? date.toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })
+        : '';
+
+      // Hent bilde-url fra både flate og attributes-formater
+      const rawUrl =
+        (e as any)?.coverImage?.url ??
+        (e as any)?.coverImage?.data?.attributes?.url ??
+        null;
+      const base = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
+      const coverUrl = rawUrl
+        ? rawUrl.startsWith('http')
+          ? rawUrl
+          : `${base}${rawUrl}`
+        : null;
+
+      return (
+        <li class="bg-white/95 rounded-2xl shadow-xl ring-1 ring-black/10 overflow-hidden">
+          {/* Kortets innhold i grid: dato | bilde | tekst */}
+          <div class="grid grid-cols-1 md:grid-cols-[84px,1.2fr,1.8fr]">
+            {/* Dato-badge */}
+            <div class="flex md:block items-center justify-start gap-3 p-4 md:p-6">
+              <div class="bg-orange-50 text-orange-700 md:w-20 w-auto rounded-xl border border-orange-200 px-3 py-2 text-center">
+                <div class="text-[11px] font-bold tracking-widest leading-none">{month}</div>
+                <div class="text-2xl md:text-3xl font-extrabold leading-none mt-1">{day}</div>
+              </div>
+            </div>
+
+            {/* Bilde */}
+            <div class="p-4 md:p-6 pt-0 md:pt-6">
+              {coverUrl ? (
+                <img
+                  src={coverUrl}
+                  alt={`Bilde for ${e.title}`}
+                  class="w-full h-48 md:h-52 lg:h-56 object-cover rounded-xl"
+                  style="aspect-ratio: 16/9;"
+                  loading="lazy"
+                />
+              ) : (
+                 <div class="w-full h-48 md:h-52 lg:h-56 bg-gray-200 rounded-xl flex items-center justify-center text-gray-500">
+                  Ingen bilde
+                </div>
+              )}
+            </div>
+
+            {/* Tekstinnhold */}
+            <div class="p-4 md:p-6 md:pl-0 flex flex-col gap-2">
+              <a href={href} class="text-xl md:text-2xl font-extrabold text-orange-700 hover:underline">
+                {e.title}
+              </a>
+
+              {/* Metainfo-rad (tid + “påmeldte” placeholder) */}
+              <div class="flex items-center gap-6 text-gray-600 text-sm md:text-base">
+                <div class="flex items-center gap-2">
+                  {/* klokke-ikon (inline svg) */}
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="opacity-70">
+                    <path d="M12 8v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  <span>{time || 'Tid TBA'}</span>
+                </div>
+
+                {/* Påmeldte – hvis du får dette fra Strapi senere, bytt ut teksten */}
+                <div class="flex items-center gap-2">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="opacity-70">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="9" cy="7" r="3" stroke="currentColor" stroke-width="2"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M16 3.13a3 3 0 0 1 0 5.75" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  <span>påmeldte TBA</span>
+                </div>
+              </div>
+
+              {/* Beskrivelse (kortet ned) */}
+              <p class="text-gray-600 text-sm md:text-base line-clamp-2">
+                {e.description ?? ''}
+              </p>
+
+              {/* Se detaljer */}
+              <div class="mt-2">
+                <a href={href} class="inline-flex items-center gap-2 text-gray-800 font-semibold hover:underline">
+                  Se detaljer
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </li>
+      );
+    })
+  }
+</ul>
+
+
+    
+    <img src="flekkNH.svg" alt="" class="float-right clear-both">
+    </main>
+  </Layout>
+
+  <style>
+    main {
+		background-color: #FE710F;
+		background-attachment: scroll;  /* Endret fra fixed til scroll */
+
+		color: black;
+		font-size: 20px;
+		line-height: 1.6;
+		min-height: 200vh; /* Sjekk om dette hjelper */
+    }
+
+    .title {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    max-width: 700px; /* juster etter smak */
+    padding: 0 1rem;  /* litt luft på små skjermer */
+    }
+
+    h1 {
+        font-size: 4rem;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        margin-bottom: 0.5em;
+    }
+  </style>
   
