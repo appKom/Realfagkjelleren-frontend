@@ -5,7 +5,7 @@ import type Description from '../interfaces/description';
 import fetchApi from '../lib/strapi';
 
 const aboutUsData = await fetchApi({
-    endpoint: 'about-us', // Endre dette til riktig endpoint for informasjon om dere
+    endpoint: 'about-us', 
     wrappedByKey: 'data',
 });
 
@@ -23,25 +23,68 @@ const om_oss_titles = await fetchApi<Title[]>({
 <Layout title="Om Oss" navbarTextColor="#FF5733">
   <img src="public/flekk_omossOV.svg" alt="flekk" class="float-left">
   <img src="public/flekk_omossOH.svg" alt="flekk" class="float-right">
-  <main class="px-7">
-    <div class="starter-page ps-[600px]">
-      <h1 class="title pt-44 text-6xl leading-8">
-        <span class="block  text-orange-500 text-6xl font-bold w-72">{}</span>
-      </h1>
-      
-      <h2 class="instructions pt-5 text-4xl font-bold  w-96">{om_oss_titles[0].Title}</h2>
-      <p class="instructions">{om_oss_descriptions[0].Description}</p>
+  <main>
+    <div class="px-7">
+      <div class="starter-page ps-[600px]">
+        <h1 class="title pt-44 text-6xl leading-8">
+          <span class="block  text-orange-500 text-6xl font-bold w-72">{}</span>
+        </h1>
+        
+        <h2 class="title w-96">{om_oss_titles[0].Title}</h2>
+        <h2 class="pt-7 text-[#703319] text-4xl font-bold w-[25rem]">Baren er drevet av studenter, for studenter</h2>
+        <p class="instructions max-w-[500px] pt-7">{om_oss_descriptions[0].Description}</p>
+      </div>
+
+      <div class="about">
+        <h1 class="title pt-44 leading-8">{om_oss_titles[1].Title}</h1>
+        <p class="instructions pt-10">
+          {om_oss_descriptions[1].Description} <br><br>
+          {om_oss_descriptions[2].Description} <br> <br>
+          {om_oss_descriptions[3].Description}<br><br>
+          {om_oss_descriptions[4].Description}
+        </p>
+      </div>
+    </div>
+    <div class="flex w-full">
+      <!-- INFO -->
+      <div class="bg-orange-500 w-1/2 text-white p-8">
+        <h1 class="text-4xl font-bold">Vi holder til i kjellerne på Moholt</h1>
+        <p class="pt-5">Du kan nå oss på:</p>
+
+        <div class="pt-7 pl-5 space-y-4">
+          <p>📍 Herman Krags veg 12</p>
+          <p>📞 +47 XXX XX XXX</p>
+          <p>✉️ styret@realfagskjelleren.no</p>
+        </div>
+      </div>
+
+      <!-- MAP -->
+      <div class="w-1/2 h-[350px]">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1785.7022235017685!2d10.42997587741302!3d63.412449176842514!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x466d316c62e31a7d%3A0x5747cb25f1aec13b!2sRealfagskjelleren!5e0!3m2!1sno!2sno!4v1760879418426!5m2!1sno!2sno"
+          width="100%"
+          height="100%"
+          style="border:0;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
     </div>
 
-    <div class="about">
-      <h1 class="title pt-52 text-6xl leading-8 text-orange-500 font-bold">{om_oss_titles[1].Title}</h1>
-      <p class="pt-10">
-        {om_oss_descriptions[1].Description} <br><br>
-        {om_oss_descriptions[2].Description} <br> <br>
-        {om_oss_descriptions[3].Description}<br><br>
-        {om_oss_descriptions[4].Description}
-      </p>
+    <div class="social-media">
+      <h1>Følg oss på sosiale medier!</h1>
+      <div class="flex justify-center space-x-5 mt-6">
+        <a href="https://www.facebook.com/Realfagskjelleren/?locale=nb_NO">
+          <img src="fb.svg" alt="facebook logo">
+        </a>
+        <a href="https://www.instagram.com/realfagskjelleren/">
+          <img src="ig.svg" alt="instagram logo">
+        </a>
+      </div>
     </div>
+
+    <div class="bg-white w-full pl-0 h-96 pb-11"></div>
   </main>
   <img src="public/bar_bilde.png" alt="bilde av baren" class="absolute top-[10vw] left-[5vw] ">
   <img src="public/flekk_omossMV.svg" alt="flekk" class="absolute top-[45vw] left-0">
@@ -56,17 +99,22 @@ const om_oss_titles = await fetchApi<Title[]>({
 		color: black;
 		font-size: 20px;
 		line-height: 1.6;
-		min-height: 300vh; /* Sjekk om dette hjelper */
+		min-height: 300vh; 
+    font-family: 'Gantari', sans-serif;
   }
 
   .title{
     margin-right: 200px;
     line-height: 60px;
-    /* padding-left: 700px; */
+    color: #FE710F;
+    font-size: 60px; 
+    font-weight: bolder;
+    line-height: 70px;
   }
   .instructions {
     margin-bottom: 2rem;
-		max-width: 620px;
+		max-width: 850px;
+    font-size: 20px;
     }
   
   .starter-page {
@@ -74,8 +122,21 @@ const om_oss_titles = await fetchApi<Title[]>({
     margin-right: auto;
   }
 
+  .contact-info {
+    color: white;
+    padding-left: 4rem;
+    line-height: 3rem;
+  }
+
+  .social-media {
+    margin-top: 5rem;
+    text-align: center;
+    font-size: 36px;
+    color:#FE710F;
+    font-weight: bolder;
+  }
+
   .about {
-    font-family: 'Gantari', sans-serif;
     margin-top: 8rem;
     line-height: 2rem;
     margin-left: 10rem;
