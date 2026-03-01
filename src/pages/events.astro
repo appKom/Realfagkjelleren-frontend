@@ -1,5 +1,4 @@
 ---
-import Card from '../components/Card.astro';
 import fetchApi from '../lib/strapi';
 import type Title from '../interfaces/title';
 import Layout from '../layouts/Layout.astro';
@@ -14,156 +13,259 @@ const events_titles = await fetchApi<Title[]>({
   endpoint: 'titles?filters[slug][$in][0]=kommende&filters[slug][$in][1]=arrangementer',
   wrappedByKey: 'data',
 });
+
+const kommendeTitle =
+  (events_titles as any[])?.find((t) => t.slug === 'kommende')?.Title ??
+  events_titles?.[0]?.Title ??
+  'Kommende';
+
+const arrangementerTitle =
+  (events_titles as any[])?.find((t) => t.slug === 'arrangementer')?.Title ??
+  events_titles?.[1]?.Title ??
+  'Arrangementer';
 ---
 
 <Layout title="Realfagskjelleren" navbarTextColor="#FFFFFF">
-    <img src="public/flekkV.svg" alt="flekk venstre" class="float-left">
-    <main>
-      <img src="flekkOH.svg" alt="" class="float-right">
+  <main class="events-page">
+    <img src="/flekkV.svg" alt="" aria-hidden="true" class="flekk flekk-left" />
+    <img src="/flekkOH.svg" alt="" aria-hidden="true" class="flekk flekk-top-right" />
+    <img src="/flekkNH.svg" alt="" aria-hidden="true" class="flekk flekk-bottom-right" />
+
+    <div class="content-layer">
       <div class="title">
-          <h1 class="pt-44 text-center text-white text-4xl leading-tight">
-              <span class="block text-7xl">{events_titles[0].Title}</span>
-              <span class="pt-4 text-7xl block -mt-1">{events_titles[1].Title}</span>
-          </h1>
+        <h1 class="pt-20 text-center text-white leading-tight">
+          <span class="block text-6xl md:text-7xl">{kommendeTitle}</span>
+          <span class="block text-6xl md:text-7xl mt-2">{arrangementerTitle}</span>
+        </h1>
       </div>
-    
-      <ul class="mx-auto mt-10 max-w-5xl space-y-8 px-4">
-  {
-    events.map((e: EventItem) => {
-      const href = `/events/${e.slug ?? e.id}`;
 
-      const date = e.date ? new Date(e.date) : null;
-      const month = date
-        ? date.toLocaleString('nb-NO', { month: 'short' }).toUpperCase()
-        : '';
-      const day = date ? date.toLocaleString('nb-NO', { day: '2-digit' }) : '';
-      const time = date
-        ? date.toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })
-        : '';
+      <ul class="mx-auto mt-10 max-w-5xl space-y-8 px-4 pb-24">
+        {
+          events.map((e: EventItem) => {
+            const href = `/events/${e.slug ?? e.id}`;
 
-      // Hent bilde-url fra både flate og attributes-formater
-      const rawUrl =
-        (e as any)?.coverImage?.url ??
-        (e as any)?.coverImage?.data?.attributes?.url ??
-        null;
-      const base = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
-      const coverUrl = rawUrl
-        ? rawUrl.startsWith('http')
-          ? rawUrl
-          : `${base}${rawUrl}`
-        : null;
+            const date = e.date ? new Date(e.date) : null;
+            const month = date
+              ? date.toLocaleString('nb-NO', { month: 'short' }).toUpperCase()
+              : '';
+            const day = date
+              ? date.toLocaleString('nb-NO', { day: '2-digit' })
+              : '';
+            const time = date
+              ? date.toLocaleTimeString('nb-NO', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })
+              : '';
 
-      return (
-        <li class="bg-white/95 rounded-2xl shadow-xl ring-1 ring-black/10 overflow-hidden">
-          {/* Kortets innhold i grid: dato | bilde | tekst */}
-          <div class="grid grid-cols-1 md:grid-cols-[84px,1.2fr,1.8fr]">
-            {/* Dato-badge */}
-            <div class="flex md:block items-center justify-start gap-3 p-4 md:p-6">
-              <div class="bg-orange-50 text-orange-700 md:w-20 w-auto rounded-xl border border-orange-200 px-3 py-2 text-center">
-                <div class="text-[11px] font-bold tracking-widest leading-none">{month}</div>
-                <div class="text-2xl md:text-3xl font-extrabold leading-none mt-1">{day}</div>
-              </div>
-            </div>
+            const rawUrl =
+              (e as any)?.coverImage?.url ??
+              (e as any)?.coverImage?.data?.attributes?.url ??
+              null;
 
-            {/* Bilde */}
-            <div class="p-4 md:p-6 pt-0 md:pt-6">
-              {coverUrl ? (
-                <img
-                  src={coverUrl}
-                  alt={`Bilde for ${e.title}`}
-                  class="w-full h-48 md:h-52 lg:h-56 object-cover rounded-xl"
-                  style="aspect-ratio: 16/9;"
-                  loading="lazy"
-                />
-              ) : (
-                 <div class="w-full h-48 md:h-52 lg:h-56 bg-gray-200 rounded-xl flex items-center justify-center text-gray-500">
-                  Ingen bilde
+            const base = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
+
+            const coverUrl = rawUrl
+              ? rawUrl.startsWith('http')
+                ? rawUrl
+                : `${base}${rawUrl}`
+              : null;
+
+            return (
+              <li class="relative z-10 overflow-hidden rounded-2xl bg-white/95 shadow-xl ring-1 ring-black/10">
+                <div class="grid grid-cols-1 md:grid-cols-[84px,1.2fr,1.8fr]">
+                  {/* Dato */}
+                  <div class="flex items-center justify-start gap-3 p-4 md:block md:p-6">
+                    <div class="w-auto rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 text-center text-orange-700 md:w-20">
+                      <div class="text-[11px] font-bold leading-none tracking-widest">{month}</div>
+                      <div class="mt-1 text-2xl font-extrabold leading-none md:text-3xl">{day}</div>
+                    </div>
+                  </div>
+
+                  {/* Bilde */}
+                  <div class="p-4 pt-0 md:p-6 md:pt-6">
+                    {coverUrl ? (
+                      <img
+                        src={coverUrl}
+                        alt={`Bilde for ${e.title}`}
+                        class="h-48 w-full rounded-xl object-cover md:h-52 lg:h-56"
+                        style="aspect-ratio: 16 / 9;"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div class="flex h-48 w-full items-center justify-center rounded-xl bg-gray-200 text-gray-500 md:h-52 lg:h-56">
+                        Ingen bilde
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tekst */}
+                  <div class="flex flex-col gap-2 p-4 md:p-6 md:pl-0">
+                    <a
+                      href={href}
+                      class="text-xl font-extrabold text-orange-700 hover:underline md:text-2xl"
+                    >
+                      {e.title}
+                    </a>
+
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600 md:gap-6 md:text-base">
+                      <div class="flex items-center gap-2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="opacity-70">
+                          <path
+                            d="M12 8v5l3 2"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <span>{time || 'Tid TBA'}</span>
+                      </div>
+
+                      <div class="flex items-center gap-2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="opacity-70">
+                          <path
+                            d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                          <circle
+                            cx="9"
+                            cy="7"
+                            r="3"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          />
+                          <path
+                            d="M22 21v-2a4 4 0 0 0-3-3.87"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M16 3.13a3 3 0 0 1 0 5.75"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                        </svg>
+                        <span>påmeldte TBA</span>
+                      </div>
+                    </div>
+
+                    <p class="line-clamp-2 text-sm text-gray-600 md:text-base">
+                      {e.description ?? ''}
+                    </p>
+
+                    <div class="mt-2">
+                      <a
+                        href={href}
+                        class="inline-flex items-center gap-2 font-semibold text-gray-800 hover:underline"
+                      >
+                        Se detaljer
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <path
+                            d="M5 12h14M13 5l7 7-7 7"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </main>
+</Layout>
 
-            {/* Tekstinnhold */}
-            <div class="p-4 md:p-6 md:pl-0 flex flex-col gap-2">
-              <a href={href} class="text-xl md:text-2xl font-extrabold text-orange-700 hover:underline">
-                {e.title}
-              </a>
-
-              {/* Metainfo-rad (tid + “påmeldte” placeholder) */}
-              <div class="flex items-center gap-6 text-gray-600 text-sm md:text-base">
-                <div class="flex items-center gap-2">
-                  {/* klokke-ikon (inline svg) */}
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="opacity-70">
-                    <path d="M12 8v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                  <span>{time || 'Tid TBA'}</span>
-                </div>
-
-                {/* Påmeldte – hvis du får dette fra Strapi senere, bytt ut teksten */}
-                <div class="flex items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="opacity-70">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="9" cy="7" r="3" stroke="currentColor" stroke-width="2"/>
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M16 3.13a3 3 0 0 1 0 5.75" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                  <span>påmeldte TBA</span>
-                </div>
-              </div>
-
-              {/* Beskrivelse (kortet ned) */}
-              <p class="text-gray-600 text-sm md:text-base line-clamp-2">
-                {e.description ?? ''}
-              </p>
-
-              {/* Se detaljer */}
-              <div class="mt-2">
-                <a href={href} class="inline-flex items-center gap-2 text-gray-800 font-semibold hover:underline">
-                  Se detaljer
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-        </li>
-      );
-    })
+<style>
+  .events-page {
+    position: relative;
+    min-height: 100vh;
+    background-color: #fe710f;
+    background-attachment: scroll;
+    color: black;
+    font-size: 20px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    padding-top: 90px;
   }
-</ul>
 
+  .content-layer {
+    position: relative;
+    z-index: 2;
+  }
 
-    
-    <img src="flekkNH.svg" alt="" class="float-right clear-both">
-    </main>
-  </Layout>
+  .flekk {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    user-select: none;
+  }
 
-  <style>
-    main {
-		background-color: #FE710F;
-		background-attachment: scroll;  /* Endret fra fixed til scroll */
+  .flekk-left {
+    left: 0;
+    top: 140px;
+    width: min(28vw, 460px);
+    max-width: 460px;
+  }
 
-		color: black;
-		font-size: 20px;
-		line-height: 1.6;
-		min-height: 200vh; /* Sjekk om dette hjelper */
-    }
+  .flekk-top-right {
+    right: 0;
+    top: 0;
+    width: min(24vw, 360px);
+    max-width: 360px;
+  }
 
-    .title {
+  .flekk-bottom-right {
+    right: 0;
+    bottom: 0;
+    width: min(24vw, 360px);
+    max-width: 360px;
+  }
+
+  .title {
     margin-left: auto;
     margin-right: auto;
+    max-width: 700px;
+    padding: 0 1rem;
     text-align: center;
-    max-width: 700px; /* juster etter smak */
-    padding: 0 1rem;  /* litt luft på små skjermer */
+  }
+
+  h1 {
+    margin-bottom: 0.5em;
+    text-align: center;
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  @media (max-width: 768px) {
+    .flekk-left {
+      width: 42vw;
+      top: 180px;
+      opacity: 0.9;
     }
 
-    h1 {
-        font-size: 4rem;
-        font-weight: 700;
-        line-height: 1;
-        text-align: center;
-        margin-bottom: 0.5em;
+    .flekk-top-right,
+    .flekk-bottom-right {
+      width: 34vw;
+      opacity: 0.9;
     }
-  </style>
-  
+  }
+</style>
