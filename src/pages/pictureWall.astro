@@ -2,45 +2,58 @@
 import Layout from "../layouts/Layout.astro";
 import PictureCard from "../components/PictureCard.astro";
 
+
 const items = [
   {
-    title: "Amaretto sour",
-    imageUrl: "../public/togutter.png",
+    title: "Emma, Mina og Theodor",
+    caption: "Trekløver i Åre",
+    imageUrl: "../public/test_bilder/EMT.png",
     bgUrl: "../public/cards_backgrounds/bg1.svg",
+    orientation: "landscape" as const,
   },
   {
-    title: "Moro",
-    imageUrl: "/images/drinks/mojito.jpg",
+    title: "Emma og Mina",
+    caption: "Album cover ting",
+    imageUrl: "/public/test_bilder/EM.jpg",
     bgUrl: "../public/cards_backgrounds/bg2.svg",
+    orientation: "portrait" as const,
   },
   {
-    title: "Halloween",
-    imageUrl: "/uma",
+    title: "Emma og Mina på ski",
+    caption: "Supre ski og flotte fruer",
+    imageUrl: "/public/test_bilder/EM2.png",
     bgUrl: "../public/cards_backgrounds/bg3.svg",
+    orientation: "landscape" as const,
   },
   {
     title: "Valentine",
-    imageUrl: "/uma",
+    caption: "I love Paris",
+    imageUrl: "/public/test_bilder/EM3.png",
     bgUrl: "../public/cards_backgrounds/bg4.svg",
   },
   {
-    title: "17 Mai",
-    imageUrl: "/uma",
+    title: "Joel og Aksel",
+    caption: "Ohhh shit",
+    imageUrl: "/public/test_bilder/JA.png",
     bgUrl: "../public/cards_backgrounds/bg5.svg",
   },  
   {
-    title: "Oktoberfest",
-    imageUrl: "/uma",
+    title: "Emma, Mina og yashmine",
+    caption: "#cutiepatoties",
+    imageUrl: "/public/test_bilder/EMY.png",
     bgUrl: "../public/cards_backgrounds/bg6.svg",
+    orientation: "landscape" as const,
   },  
   {
-    title: "Jul",
-    imageUrl: "/uma",
+    title: "Paris",
+    caption: "To kule folk",
+    imageUrl: "/public/test_bilder/EMP.png",
     bgUrl: "../public/cards_backgrounds/bg7.svg",
   },
   {
     title: "Sjakk-rave",
-    imageUrl: "/uma",
+    caption: "sup dogggg",
+    imageUrl: "/public/test_bilder/M.png",
     bgUrl: "../public/cards_backgrounds/bg8.svg",
   },
   
@@ -74,10 +87,11 @@ const items = [
   }
 
   .grid {
-    display: grid;
-    grid-template-columns: repeat(4, 255px);
+    display: flex;
+    flex-wrap: wrap;
     gap: 3.5rem;
-    justify-content: center; 
+    justify-content: center;
+    align-items: flex-start;
   }
 
   .content{
