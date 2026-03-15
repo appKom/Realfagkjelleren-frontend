@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
 import Navbar from '../components/Navbar.jsx';
+import Footer from '../components/Footer.jsx';
 
 const { title } = Astro.props;
 ---
@@ -12,13 +13,6 @@ const { title } = Astro.props;
 </head>
 <BaseLayout title={title}>
     <Navbar client:load textColor={Astro.props.navbarTextColor ?? '#FFFFFF'} />
-    <footer></footer>
-</BaseLayout>
-
     <slot />
-
-    <footer>
-
-    </footer>
-    
+    <Footer />
 </BaseLayout>
