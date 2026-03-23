@@ -3,16 +3,23 @@ import BaseLayout from "./BaseLayout.astro";
 import Navbar from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
 
-const { title } = Astro.props;
+const { title, navbarTextColor = '#FFFFFF' } = Astro.props;
 ---
-<head>
-    <meta charset="UTF-8" />
-    <link href="https://fonts.googleapis.com/css2?family=Gantari:wght@400;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Gantari:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+<head>
+  <meta charset="UTF-8" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Gantari:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Gantari:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
 </head>
+
 <BaseLayout title={title}>
-    <Navbar client:load textColor={Astro.props.navbarTextColor ?? '#FFFFFF'} />
-    <slot />
-    <Footer />
+  <Navbar client:load textColor={navbarTextColor} />
+  <slot />
+  <footer></footer>
 </BaseLayout>

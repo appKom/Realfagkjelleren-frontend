@@ -4,6 +4,7 @@ import Logo from './Logo';
 const Navbar = ({ textColor = '#ffffff' }) => {
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+
   const scrollThreshold = 100;
   const showThreshold = 900;
 
@@ -17,6 +18,7 @@ const Navbar = ({ textColor = '#ffffff' }) => {
       ) {
         setVisible(true);
       }
+
       setLastScrollY(window.scrollY);
     };
 
@@ -26,12 +28,12 @@ const Navbar = ({ textColor = '#ffffff' }) => {
 
   return (
     <nav
-      className={`mt-8 h-24 w-full fixed flex items-center justify-center px-6 bg-transparent ${
-        visible ? '' : 'hidden'
+      className={`fixed top-0 left-0 z-[9999] w-full h-24 flex items-center justify-center px-6 bg-transparent ${
+        visible ? 'block' : 'hidden'
       }`}
     >
       <div
-        className="mx-auto flex items-center text-xl gap-8"
+        className="mx-auto mt-8 flex items-center gap-8 text-xl relative z-[9999]"
         style={{ color: textColor }}
       >
         <div className="flex justify-center">

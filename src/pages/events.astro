@@ -1,5 +1,4 @@
 ---
-import Card from '../components/Card.astro';
 import fetchApi from '../lib/strapi';
 import type Title from '../interfaces/title';
 import Layout from '../layouts/Layout.astro';
@@ -14,156 +13,475 @@ const events_titles = await fetchApi<Title[]>({
   endpoint: 'titles?filters[slug][$in][0]=kommende&filters[slug][$in][1]=arrangementer',
   wrappedByKey: 'data',
 });
+
+const kommendeTitle =
+  (events_titles as any[])?.find((t) => t.slug === 'kommende')?.Title ??
+  events_titles?.[0]?.Title ??
+  'Kommende';
+
+const arrangementerTitle =
+  (events_titles as any[])?.find((t) => t.slug === 'arrangementer')?.Title ??
+  events_titles?.[1]?.Title ??
+  'Arrangementer';
 ---
 
 <Layout title="Realfagskjelleren" navbarTextColor="#FFFFFF">
-    <img src="public/flekkV.svg" alt="flekk venstre" class="float-left">
-    <main>
-      <img src="flekkOH.svg" alt="" class="float-right">
-      <div class="title">
-          <h1 class="pt-44 text-center text-white text-4xl leading-tight">
-              <span class="block text-7xl">{events_titles[0].Title}</span>
-              <span class="pt-4 text-7xl block -mt-1">{events_titles[1].Title}</span>
-          </h1>
+  <main class="events-page">
+    <img src="/flekkV.svg" alt="" aria-hidden="true" class="flekk flekk-left" />
+    <img src="/flekkOH.svg" alt="" aria-hidden="true" class="flekk flekk-top-right" />
+    <img src="/flekkNH.svg" alt="" aria-hidden="true" class="flekk flekk-bottom-right" />
+
+    <div class="content-layer">
+      <div class="title-wrap">
+        <h1 class="page-title pt-20 text-center text-white text-4xl leading-tight">
+          <span class="block text-7xl">{kommendeTitle}</span>
+          <span class="block text-7xl">{arrangementerTitle}</span>
+        </h1>
       </div>
-    
-      <ul class="mx-auto mt-10 max-w-5xl space-y-8 px-4">
-  {
-    events.map((e: EventItem) => {
-      const href = `/events/${e.slug ?? e.id}`;
 
-      const date = e.date ? new Date(e.date) : null;
-      const month = date
-        ? date.toLocaleString('nb-NO', { month: 'short' }).toUpperCase()
-        : '';
-      const day = date ? date.toLocaleString('nb-NO', { day: '2-digit' }) : '';
-      const time = date
-        ? date.toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })
-        : '';
+      <ul class="events-list">
+        {
+          events.map((e: EventItem) => {
+            const href = `/events/${e.slug ?? e.id}`;
 
-      // Hent bilde-url fra både flate og attributes-formater
-      const rawUrl =
-        (e as any)?.coverImage?.url ??
-        (e as any)?.coverImage?.data?.attributes?.url ??
-        null;
-      const base = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
-      const coverUrl = rawUrl
-        ? rawUrl.startsWith('http')
-          ? rawUrl
-          : `${base}${rawUrl}`
-        : null;
+            const date = e.date ? new Date(e.date) : null;
+            const month = date
+              ? date.toLocaleString('nb-NO', { month: 'short' }).toUpperCase()
+              : '';
+            const day = date
+              ? date.toLocaleString('nb-NO', { day: '2-digit' })
+              : '';
+            const time = date
+              ? date.toLocaleTimeString('nb-NO', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })
+              : 'Tid TBA';
 
-      return (
-        <li class="bg-white/95 rounded-2xl shadow-xl ring-1 ring-black/10 overflow-hidden">
-          {/* Kortets innhold i grid: dato | bilde | tekst */}
-          <div class="grid grid-cols-1 md:grid-cols-[84px,1.2fr,1.8fr]">
-            {/* Dato-badge */}
-            <div class="flex md:block items-center justify-start gap-3 p-4 md:p-6">
-              <div class="bg-orange-50 text-orange-700 md:w-20 w-auto rounded-xl border border-orange-200 px-3 py-2 text-center">
-                <div class="text-[11px] font-bold tracking-widest leading-none">{month}</div>
-                <div class="text-2xl md:text-3xl font-extrabold leading-none mt-1">{day}</div>
-              </div>
-            </div>
+            const rawUrl =
+              (e as any)?.coverImage?.url ??
+              (e as any)?.coverImage?.data?.attributes?.url ??
+              null;
 
-            {/* Bilde */}
-            <div class="p-4 md:p-6 pt-0 md:pt-6">
-              {coverUrl ? (
-                <img
-                  src={coverUrl}
-                  alt={`Bilde for ${e.title}`}
-                  class="w-full h-48 md:h-52 lg:h-56 object-cover rounded-xl"
-                  style="aspect-ratio: 16/9;"
-                  loading="lazy"
-                />
-              ) : (
-                 <div class="w-full h-48 md:h-52 lg:h-56 bg-gray-200 rounded-xl flex items-center justify-center text-gray-500">
-                  Ingen bilde
+            const base = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
+
+            const coverUrl = rawUrl
+              ? rawUrl.startsWith('http')
+                ? rawUrl
+                : `${base}${rawUrl}`
+              : null;
+
+            return (
+              <li class="event-card">
+                <div class="event-grid">
+                  <div class="date-col">
+                    <div class="month">{month}</div>
+                    <div class="day">{day}</div>
+                  </div>
+
+                  <div class="image-col">
+                    {coverUrl ? (
+                      <img
+                        src={coverUrl}
+                        alt={`Bilde for ${e.title}`}
+                        class="event-image"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div class="event-image event-image-fallback">
+                        Ingen bilde
+                      </div>
+                    )}
+                  </div>
+
+                  <div class="text-col">
+                    <a href={href} class="event-title">
+                      {e.title}
+                    </a>
+
+                    <div class="meta-row">
+                      <div class="meta-item">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path
+                            d="M12 8v5l3 2"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <span>{time}</span>
+                      </div>
+
+                      <div class="meta-item">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path
+                            d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                          <circle
+                            cx="9"
+                            cy="7"
+                            r="3"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          />
+                          <path
+                            d="M22 21v-2a4 4 0 0 0-3-3.87"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M16 3.13a3 3 0 0 1 0 5.75"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                          />
+                        </svg>
+                        <span>påmeldte TBA</span>
+                      </div>
+                    </div>
+
+                    <p class="event-description">
+                      {e.description ?? ''}
+                    </p>
+
+                    <div class="cta-wrap">
+                      <a href={href} class="event-link">
+                        <span>Se detaljer</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path
+                            d="M5 12h14M13 5l7 7-7 7"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </main>
+</Layout>
 
-            {/* Tekstinnhold */}
-            <div class="p-4 md:p-6 md:pl-0 flex flex-col gap-2">
-              <a href={href} class="text-xl md:text-2xl font-extrabold text-orange-700 hover:underline">
-                {e.title}
-              </a>
-
-              {/* Metainfo-rad (tid + “påmeldte” placeholder) */}
-              <div class="flex items-center gap-6 text-gray-600 text-sm md:text-base">
-                <div class="flex items-center gap-2">
-                  {/* klokke-ikon (inline svg) */}
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="opacity-70">
-                    <path d="M12 8v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                  <span>{time || 'Tid TBA'}</span>
-                </div>
-
-                {/* Påmeldte – hvis du får dette fra Strapi senere, bytt ut teksten */}
-                <div class="flex items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="opacity-70">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="9" cy="7" r="3" stroke="currentColor" stroke-width="2"/>
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M16 3.13a3 3 0 0 1 0 5.75" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                  <span>påmeldte TBA</span>
-                </div>
-              </div>
-
-              {/* Beskrivelse (kortet ned) */}
-              <p class="text-gray-600 text-sm md:text-base line-clamp-2">
-                {e.description ?? ''}
-              </p>
-
-              {/* Se detaljer */}
-              <div class="mt-2">
-                <a href={href} class="inline-flex items-center gap-2 text-gray-800 font-semibold hover:underline">
-                  Se detaljer
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-        </li>
-      );
-    })
+<style>
+  .events-page {
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: #fe710f;
+    padding-top: 84px;
+    padding-bottom: 60px;
   }
-</ul>
 
+  .content-layer {
+    position: relative;
+    z-index: 2;
+  }
 
-    
-    <img src="flekkNH.svg" alt="" class="float-right clear-both">
-    </main>
-  </Layout>
+  .flekk {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    user-select: none;
+  }
 
-  <style>
-    main {
-		background-color: #FE710F;
-		background-attachment: scroll;  /* Endret fra fixed til scroll */
+  .flekk-left {
+    left: 0;
+    top: 120px;
+    width: min(30vw, 520px);
+    max-width: 520px;
+  }
 
-		color: black;
-		font-size: 20px;
-		line-height: 1.6;
-		min-height: 200vh; /* Sjekk om dette hjelper */
-    }
+  .flekk-top-right {
+    right: 0;
+    top: 0;
+    width: min(26vw, 410px);
+    max-width: 410px;
+  }
 
-    .title {
-    margin-left: auto;
-    margin-right: auto;
+  .flekk-bottom-right {
+    right: 0;
+    bottom: 0;
+    width: min(24vw, 360px);
+    max-width: 360px;
+    opacity: 0.95;
+  }
+
+  .title-wrap {
+    margin: 0 auto;
+    max-width: 900px;
+    padding: 22px 1rem 0;
     text-align: center;
-    max-width: 700px; /* juster etter smak */
-    padding: 0 1rem;  /* litt luft på små skjermer */
+  }
+
+  .page-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.08em;
+    color: #ffffff;
+    font-size: clamp(3.3rem, 7vw, 5.7rem);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+  }
+
+  .events-list {
+    list-style: none;
+    margin: 46px auto 0;
+    padding: 0 1.5rem;
+    max-width: 1150px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .event-card {
+    position: relative;
+    z-index: 2;
+    border-radius: 22px;
+    background: #f1ece8;
+    box-shadow: 0 10px 22px rgba(88, 39, 0, 0.14);
+    overflow: hidden;
+  }
+
+  .event-grid {
+    display: grid;
+    grid-template-columns: 120px 355px minmax(0, 1fr);
+    align-items: center;
+    gap: 0;
+    min-height: 268px;
+    padding: 0 26px 0 18px;
+  }
+
+  .date-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #d75715;
+    text-align: center;
+    min-height: 100%;
+  }
+
+  .month {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .day {
+    font-size: 3.45rem;
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+  }
+
+  .image-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 12px 20px 0;
+  }
+
+  .event-image {
+    width: 100%;
+    max-width: 330px;
+    height: 236px;
+    object-fit: cover;
+    border-radius: 0;
+    display: block;
+  }
+
+  .event-image-fallback {
+    background: #d9d9d9;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .text-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 26px 8px 24px 28px;
+    min-width: 0;
+  }
+
+  .event-title {
+    color: #df5b16;
+    text-decoration: none;
+    font-size: clamp(2rem, 2.7vw, 3.1rem);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    margin-bottom: 14px;
+    display: inline-block;
+  }
+
+  .event-title:hover {
+    text-decoration: underline;
+  }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 34px;
+    color: #8a8a8a;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+
+  .meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .meta-item svg {
+    flex-shrink: 0;
+    opacity: 0.9;
+  }
+
+  .event-description {
+    max-width: 36ch;
+    margin: 0;
+    color: #8d8d8d;
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+
+  .cta-wrap {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(40, 40, 40, 0.12);
+    max-width: 360px;
+  }
+
+  .event-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #7a7a7a;
+    text-decoration: none;
+    font-size: 0.98rem;
+    font-weight: 700;
+  }
+
+  .event-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 1100px) {
+    .event-grid {
+      grid-template-columns: 100px 290px minmax(0, 1fr);
+      padding-right: 18px;
     }
 
-    h1 {
-        font-size: 4rem;
-        font-weight: 700;
-        line-height: 1;
-        text-align: center;
-        margin-bottom: 0.5em;
+    .event-image {
+      height: 210px;
+      max-width: 280px;
     }
-  </style>
-  
+
+    .event-title {
+      font-size: 2.2rem;
+    }
+  }
+
+  @media (max-width: 820px) {
+    .events-page {
+      padding-top: 76px;
+    }
+
+    .events-list {
+      padding: 0 1rem;
+      gap: 20px;
+    }
+
+    .event-grid {
+      grid-template-columns: 1fr;
+      padding: 18px;
+      gap: 12px;
+      min-height: unset;
+    }
+
+    .date-col {
+      align-items: flex-start;
+      text-align: left;
+      min-height: unset;
+      padding-bottom: 6px;
+    }
+
+    .month {
+      margin-bottom: 2px;
+      font-size: 0.9rem;
+    }
+
+    .day {
+      font-size: 2.7rem;
+    }
+
+    .image-col {
+      justify-content: flex-start;
+      padding: 0;
+    }
+
+    .event-image {
+      max-width: 100%;
+      width: 100%;
+      height: 220px;
+      border-radius: 14px;
+    }
+
+    .text-col {
+      padding: 0;
+    }
+
+    .event-title {
+      font-size: 1.9rem;
+      margin-bottom: 10px;
+    }
+
+    .event-description {
+      max-width: 100%;
+    }
+
+    .cta-wrap {
+      max-width: 100%;
+    }
+
+    .flekk-left {
+      width: 44vw;
+      top: 180px;
+    }
+
+    .flekk-top-right,
+    .flekk-bottom-right {
+      width: 34vw;
+    }
+  }
+</style>
