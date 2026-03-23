@@ -1,0 +1,114 @@
+---
+import Layout from "../layouts/Layout.astro";
+import MenuCard from "../components/MenuCard.astro";
+import fetchApi from "../lib/strapi";
+
+const res = await fetchApi<any>({
+  endpoint: "drinks?populate=image",
+});
+
+const STRAPI = (import.meta.env.PUBLIC_STRAPI_URL ?? "http://localhost:1337").replace(/\/$/, "");
+
+const bgForIndex = (i: number) => `/cards_backgrounds/bg${(i % 8) + 1}.svg`;
+
+const pickBestImageUrl = (img: any): string | null => {
+  if (!img) return null;
+
+  return (
+    img?.formats?.large?.url ??
+    img?.formats?.medium?.url ??
+    img?.formats?.small?.url ??
+    img?.url ??
+    null
+  );
+};
+
+const data: any[] = Array.isArray(res?.data) ? res.data : [];
+
+const drinks = data.map((item, idx) => {
+  const title = String(item?.title ?? item?.attributes?.title ?? "Uten navn");
+  const description = String(
+    item?.description ??
+      item?.attributes?.description ??
+      "Beskrivelse kommer senere"
+  );
+
+  const image = item?.image ?? item?.attributes?.image ?? null;
+  const rel = pickBestImageUrl(image);
+
+  const imageUrl = rel
+    ? rel.startsWith("http")
+      ? rel
+      : `${STRAPI}${rel.startsWith("/") ? "" : "/"}${rel}`
+    : "/fallback.png";
+
+  return {
+    title,
+    description,
+    imageUrl,
+    bgUrl: bgForIndex(idx),
+  };
+});
+---
+
+<Layout title="Menu" navbarTextColor="#FE710F">
+  <main>
+    <div class="content">
+      <section class="menu-grid">
+        {drinks.map((drink) => (
+          <MenuCard {...drink} />
+        ))}
+      </section>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    background-color: #ffffff;
+    width: 100%;
+    min-height: 100vh;
+    font-family: "Gantari", sans-serif;
+  }
+
+  .content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 11rem 2rem 5rem;
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    gap: 3rem 2.5rem;
+    justify-items: center;
+  }
+
+  @media (max-width: 1200px) {
+    .menu-grid {
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+    }
+  }
+
+  @media (max-width: 900px) {
+    .content {
+      padding-top: 9rem;
+    }
+
+    .menu-grid {
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 2rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .content {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .menu-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Logo from './Logo';
 
 const Navbar = ({ textColor = '#ffffff' }) => {
   const [visible, setVisible] = useState(true);
@@ -48,12 +49,12 @@ const Navbar = ({ textColor = '#ffffff' }) => {
         </div>
 
         <div className="flex justify-center">
-          <a href="/">
-            <img
-              src="/00_pi_dame.svg"
-              alt="Realfagskjelleren logo"
-              className="h-16 invert brightness-0"
-            />
+          <a
+            href="/"
+            aria-label="Realfagskjelleren logo"
+            className="flex items-center justify-center"
+          >
+            <Logo className="h-14 w-auto" />
           </a>
         </div>
 

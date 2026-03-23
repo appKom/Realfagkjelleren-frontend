@@ -5,7 +5,7 @@ import type Title from '../interfaces/title';
 import fetchApi from '../lib/strapi';
 
 const home_page_description = await fetchApi<Description>({
-    endpoint: 'descriptions/i4zgdvux2uwcd4mjsw9b3rv8',
+    endpoint: 'descriptions/bkksn9bwfoly7n5ymu9jweme',
     wrappedByKey: 'data',
 })
 
@@ -16,9 +16,11 @@ const home_page_titles = await fetchApi<Title[]>({
 ---
 
 <Layout title="Realfagskjelleren" navbarTextColor="#FFFFFF">
-    <img src="public/flekkV.svg" alt="flekk venstre" class="float-left">
+    <div class="flekkV">
+        <img src="/flekkV.svg" alt="flekk venstre" class="float-left w-full max-w-sm h-auto">
+    </div>
     <main>
-        <img src="flekkOH.svg" alt="" class="float-right">
+        <img src="/flekkOH.svg" alt="" class="float-right w-full max-w-sm h-auto">
         <div class="information">
             <h1 class="pt-44 text-center text-white text-4xl leading-tight">
                 <span class="block text-7xl">{home_page_titles[0].Title}</span>
@@ -35,21 +37,21 @@ const home_page_titles = await fetchApi<Title[]>({
                 </a>
             </div>
         </div>
-            
-    
-        <img src="flekkNH.svg" alt="" class ="float-right mt-32">
+        <div class ="flekkH">
+            <img src="/flekkNH.svg" alt="" class="float-right mt-32 w-full max-w-sm h-auto">
+        </div>
         </main>
     </Layout>
 
 <style>
     main {
 		background-color: #FE710F;
-		background-attachment: scroll;  /* Endret fra fixed til scroll */
+		background-attachment: scroll; 
 
 		color: black;
 		font-size: 20px;
 		line-height: 1.6;
-		min-height: 200vh; /* Sjekk om dette hjelper */
+		min-height: 200vh; 
     }
     /* .astro-a {
         position: absolute;
@@ -72,8 +74,16 @@ const home_page_titles = await fetchApi<Title[]>({
     margin-left: auto;
     margin-right: auto;
     text-align: center;
-    max-width: 700px; /* juster etter smak */
-    padding: 0 1rem;  /* litt luft på små skjermer */
+    max-width: 700px; 
+    padding: 0 1rem;  
+    }
+
+    .flekkH{
+        width: 100%;
+    }
+
+    .flekkV{
+        width: 100%;
     }
 
 </style>

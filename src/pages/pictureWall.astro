@@ -1,0 +1,104 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PictureCard from "../components/PictureCard.astro";
+import fetchApi from "../lib/strapi";
+
+const res = await fetchApi<any>({
+  endpoint: "posts?populate=image",
+});
+
+const STRAPI = (import.meta.env.PUBLIC_STRAPI_URL ?? "http://localhost:1337").replace(/\/$/, "");
+
+const bgForIndex = (i: number) => `/cards_backgrounds/bg${(i % 8) + 1}.svg`;
+
+const pickBestImageUrl = (img: any): string | null => {
+  if (!img) return null;
+  return (
+    img?.formats?.large?.url ??
+    img?.formats?.medium?.url ??
+    img?.formats?.small?.url ??
+    img?.url ??
+    null
+  );
+};
+
+const data: any[] = Array.isArray(res?.data) ? res.data : [];
+
+const items = data.map((p, idx) => {
+  const caption = String(p?.caption ?? p?.attributes?.caption ?? "");
+  const title = String(p?.title ?? p?.attributes?.title ?? caption ?? "Uten tittel");
+
+  const images = p?.image ?? p?.attributes?.image ?? [];
+  const img = Array.isArray(images) ? images[0] : null;
+
+  const rel = pickBestImageUrl(img);
+  const imageUrl = rel
+    ? rel.startsWith("http")
+      ? rel
+      : `${STRAPI}${rel.startsWith("/") ? "" : "/"}${rel}`
+    : "/fallback.png";
+
+  const w = img?.width;
+  const h = img?.height;
+  const orientation =
+    typeof w === "number" && typeof h === "number" && w > h
+      ? ("landscape" as const)
+      : ("portrait" as const);
+
+  return {
+    title,
+    caption,
+    imageUrl,
+    bgUrl: bgForIndex(idx),
+    orientation,
+  };
+});
+---
+
+<Layout title="pictureWall" navbarTextColor="#FF5733">
+  <main>
+    <div class="content">
+      <h1 class="pb-16 title">Bildevegg</h1>
+
+      <section class="grid">
+        {items.map((item, idx) => (
+          <PictureCard {...item} highlighted={idx === 3} />
+        ))}
+      </section>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    background-color: rgb(255, 255, 255);
+    width: 100%;
+    color: black;
+    font-size: 20px;
+    line-height: 1.6;
+    min-height: 100vh;
+    font-family: "Gantari", sans-serif;
+  }
+
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3.5rem;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .content {
+    padding-top: 11rem;
+    padding-left: auto;
+    padding-right: auto;
+  }
+
+  .title {
+    color: #fe710f;
+    font-size: 60px;
+    font-weight: bolder;
+    text-align: center;
+    line-height: 70px;
+  }
+</style>
