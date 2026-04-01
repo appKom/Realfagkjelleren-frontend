@@ -24,24 +24,24 @@ const om_oss_titles = await fetchApi<Title[]>({
 <Layout title="Om Oss" navbarTextColor="#FF5733">
   <main class="relative overflow-hidden bg-[#f6f6f6] text-black font-['Gantari']">
     
-    <img src="/flekk_omossOV.svg" alt="" class="pointer-events-none absolute top-0 left-0 w-40 md:w-40 lg:w-80" />
-    <img src="/flekk_omossOH.svg" alt="" class="pointer-events-none absolute top-0 right-0 w-20 md:w-40 lg:w-40" />
-    <img src="/flekk_omossMV.svg" alt="" class="pointer-events-none absolute left-0 top-[17%] sm:top-[18%] lg:top-[25%] w-32 md:w-52 lg:w-72 z-50" />
-    <img src="/flekk_omossNH.svg" alt="" class="pointer-events-none absolute right-0 bottom-[24%] sm:bottom-[29%] lg:bottom-[30%] w-32 md:w-52 lg:w-72" />
+    <img src="/flekk_omossOV.svg" alt="" class="pointer-events-none absolute top-0 left-0 w-32 md:w-40 lg:w-80" />
+    <img src="/flekk_omossOH.svg" alt="" class="pointer-events-none absolute top-0 right-0 w-20 md:w-40 lg:w-38" />
+    <img src="/flekk_omossMV.svg" alt="" class="pointer-events-none absolute left-0 top-[18%] sm:top-[20%] lg:top-[25%] w-32 md:w-52 lg:w-72 z-50" />
+    <img src="/flekk_omossNH.svg" alt="" class="pointer-events-none absolute right-0 bottom-[23%] sm:bottom-[27%] lg:bottom-[27%] w-32 md:w-52 lg:w-64" />
 
-    <section class="relative z-10 mx-auto mt-10 max-w-8xl px-6 sm:px-8 sm:mt-20 lg:px-12 pt-20 md:pt-0 pb-20">
+    <section class="relative z-10 mt-10 max-w-6xl px-6 sm:px-8 sm:mt-20 lg:px-20 pt-20 md:pt-0 pb-20">
       <!-- Hero -->
       <div class="grid lg:grid-cols-[auto_1fr] items-start lg:gap-20">
         <div class="mx-auto mt-16 order-2 lg:order-1 lg:mx-0">
           <img
             src="/bar_bilde.png"
             alt="bilde av baren"
-            class="max-w-[465px] w-[350px] lg:w-[465px] rounded-2xl object-cover shadow-sm"
+            class="max-w-[465px] w-[300px] sm:w-[335px] lg:w-[450px] rounded-2xl object-cover shadow-sm"
           />
         </div>
 
         <div class="order-1 lg:order-2">
-          <h1 class="max-w-[12ch] text-3xl font-black uppercase text-orange-500 pt-16 sm:text-5xl lg:text-6xl lg:leading-[4.5rem]">
+          <h1 class="max-w-[10ch] text-3xl font-black uppercase text-orange-500 pt-4 sm:pt-20 sm:text-5xl lg:text-[clamp(0.2rem,4.5vw,6rem)] lg:leading-[3.5rem]">
             {om_oss_titles[0].Title}
           </h1>
 
@@ -56,7 +56,7 @@ const om_oss_titles = await fetchApi<Title[]>({
       </div>
 
       <!-- Historie -->
-      <section class="mt-16 max-w-3xl justify-start lg:mt-36 lg:ml-36">
+      <section class="mt-16 max-w-2xl lg:max-w-3xl justify-start lg:mt-44 lg:ml-36">
         <h2 class="text-4xl font-extrabold leading-tight text-[#FE710F] sm:text-5xl lg:text-6xl">
           {om_oss_titles[1].Title}
         </h2>
