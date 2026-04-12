@@ -65,57 +65,82 @@ const Navbar = ({ textColor = '#ffffff', mobileWhite = false }) => {
     >
       {/* Mobil */}
       <div className="md:hidden">
-        {!isMenuOpen ? (
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            isMenuOpen
+              ? 'max-h-[420px] opacity-100'
+              : 'max-h-16 opacity-100'
+          }`}
+          style={{ color: isMenuOpen ? '#ffffff' : effectiveTextColor }}
+        >
           <div
-            className="mt-5 flex h-12 w-full items-center justify-end px-4"
-            style={{ color: effectiveTextColor }}
+            className={`w-full px-4 transition-all duration-300 ${
+              isMenuOpen
+                ? 'bg-orange-500/85 backdrop-blur pt-3 pb-5'
+                : 'bg-transparent pt-3 pb-3'
+            }`}
           >
-            <button
-              onClick={toggleMenu}
-              aria-label="Åpne meny"
-              className="ml-auto flex h-10 w-10 flex-col items-center justify-center gap-1"
-            >
-              <span className="block h-0.5 w-6 bg-current transition-all"></span>
-              <span className="block h-0.5 w-6 bg-current transition-all"></span>
-              <span className="block h-0.5 w-6 bg-current transition-all"></span>
-            </button>
-          </div>
-        ) : (
-          <div className="w-full backdrop-blur bg-orange-500/70 px-6 pb-8 pt-4 text-white">
-            <div className="flex items-start justify-end">
-              <a
+            {/* Topprad */}
+            <div className="relative flex h-10 items-center justify-end">
+              {isMenuOpen && (
+                <a
                   href="/"
                   aria-label="Realfagskjelleren logo"
-                  className="absolute left-1/2 -translate-x-1/2 items-center justify-center"
+                  className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center"
+                  onClick={closeMenu}
                 >
-                <Logo className="h-14 w-auto" />
-              </a>
+                  <Logo className="mt-5 h-12 w-auto" />
+                </a>
+              )}
+
               <button
-                onClick={closeMenu}
-                aria-label="Lukk meny"
+                onClick={toggleMenu}
+                aria-label={isMenuOpen ? 'Lukk meny' : 'Åpne meny'}
                 className="relative flex h-10 w-10 items-center justify-center"
               >
-                <span className="absolute block h-0.5 w-6 rotate-45 bg-current"></span>
-                <span className="absolute block h-0.5 w-6 -rotate-45 bg-current"></span>
+                <span
+                  className={`absolute block h-0.5 w-6 bg-current transition-all duration-300 ease-in-out ${
+                    isMenuOpen ? 'rotate-45' : '-translate-y-2'
+                  }`}
+                />
+                <span
+                  className={`absolute block h-0.5 w-6 bg-current transition-all duration-300 ease-in-out ${
+                    isMenuOpen ? 'opacity-0' : 'opacity-100'
+                  }`}
+                />
+                <span
+                  className={`absolute block h-0.5 w-6 bg-current transition-all duration-300 ease-in-out ${
+                    isMenuOpen ? '-rotate-45' : 'translate-y-2'
+                  }`}
+                />
               </button>
             </div>
 
-            <div className="flex flex-col gap-4 text-base font-semibold">
-              <a href="/pictureWall" onClick={closeMenu}>
-                Bildevegg
-              </a>
-              <a href="/omOss" onClick={closeMenu}>
-                Om oss
-              </a>
-              <a href="/menu" onClick={closeMenu}>
-                Meny
-              </a>
-              <a href="/events" onClick={closeMenu}>
-                Arrangementer
-              </a>
+            {/* Menyinnhold */}
+            <div
+              className={`transition-all duration-300 ease-in-out ${
+                isMenuOpen
+                  ? 'mt-3 opacity-100 translate-y-0'
+                  : 'mt-0 opacity-0 -translate-y-2 pointer-events-none'
+              }`}
+            >
+              <div className="flex flex-col gap-3 text-base font-semibold text-white">
+                <a href="/pictureWall" onClick={closeMenu}>
+                  Bildevegg
+                </a>
+                <a href="/omOss" onClick={closeMenu}>
+                  Om oss
+                </a>
+                <a href="/menu" onClick={closeMenu}>
+                  Meny
+                </a>
+                <a href="/events" onClick={closeMenu}>
+                  Arrangementer
+                </a>
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Desktop */}
