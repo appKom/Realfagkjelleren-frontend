@@ -31,26 +31,21 @@ const items = data.map((p, idx) => {
   const images = p?.image ?? p?.attributes?.image ?? [];
   const img = Array.isArray(images) ? images[0] : null;
 
-  const rel = pickBestImageUrl(img);
+  const rel = pickBestImageUrl(img); 
   const imageUrl = rel
     ? rel.startsWith("http")
       ? rel
       : `${STRAPI}${rel.startsWith("/") ? "" : "/"}${rel}`
     : "/fallback.png";
-
-  const w = img?.width;
-  const h = img?.height;
-  const orientation =
-    typeof w === "number" && typeof h === "number" && w > h
-      ? ("landscape" as const)
-      : ("portrait" as const);
+  
+  const rotation = (Math.random() * 4 - 2).toFixed(2);
 
   return {
     title,
     caption,
     imageUrl,
     bgUrl: bgForIndex(idx),
-    orientation,
+    rotation
   };
 });
 ---
@@ -62,7 +57,9 @@ const items = data.map((p, idx) => {
 
       <section class="grid">
         {items.map((item, idx) => (
-          <PictureCard {...item} highlighted={idx === 3} />
+          <div style={`transform: rotate(${item.rotation}deg);`}>
+            <PictureCard {...item} highlighted={idx === 3} />
+          </div>
         ))}
       </section>
     </div>
