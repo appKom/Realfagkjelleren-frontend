@@ -4,10 +4,12 @@ import type Title from '../interfaces/title';
 import Layout from '../layouts/Layout.astro';
 import type EventItem from '../interfaces/event';
 
-const events = await fetchApi<EventItem[]>({
+const eventsResponse = await fetchApi<EventItem[]>({
   endpoint: 'events?populate=coverImage&sort=date:asc',
   wrappedByKey: 'data',
 });
+
+const events = eventsResponse ?? [];
 
 const events_titles = await fetchApi<Title[]>({
   endpoint: 'titles?filters[slug][$in][0]=kommende&filters[slug][$in][1]=arrangementer',
