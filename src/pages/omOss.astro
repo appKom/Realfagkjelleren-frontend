@@ -1,29 +1,19 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import type Title from '../interfaces/title';
-import type Description from '../interfaces/description';
-import fetchApi from '../lib/strapi';
+import type About from '../interfaces/about';
+import fetchSanity from '../lib/sanity';
 
-const aboutUsData = await fetchApi({
-  endpoint: 'about-us',
-  wrappedByKey: 'data',
-});
+const about = await fetchSanity<About>(`*[_type == "about"][0]`);
 
-const om_oss_descriptions = await fetchApi<Description[]>({
-  endpoint:
-    'descriptions?filters[slug][$in][0]=description&filters[slug][$in][1]=description-1&filters[slug][$in][2]=description-2&filters[slug][$in][3]=description-3&filters[slug][$in][4]=description-4',
-  wrappedByKey: 'data',
-});
-
-const om_oss_titles = await fetchApi<Title[]>({
-  endpoint: 'titles?filters[slug][$in][0]=bar&filters[slug][$in][1]=historie',
-  wrappedByKey: 'data',
-});
+const historyParagraphs = about.historyText
+  .split(/\n\s*\n/)
+  .map((p) => p.trim())
+  .filter(Boolean);
 ---
 
 <Layout title="Om Oss" navbarTextColor="#FF5733" navbarMobileWhite>
   <main class="relative overflow-hidden bg-[#f6f6f6] text-black font-['Gantari']">
-    
+
     <img src="/flekk_omossOV.svg" alt="" class="pointer-events-none absolute top-0 left-0 w-32 md:w-40 lg:w-80" />
     <img src="/flekk_omossOH.svg" alt="" class="pointer-events-none absolute top-0 right-0 w-20 md:w-40 lg:w-38" />
     <img src="/flekk_omossMV.svg" alt="" class="pointer-events-none absolute left-0 top-[18%] sm:top-[20%] lg:top-[25%] w-32 md:w-52 lg:w-72 z-50" />
@@ -42,15 +32,15 @@ const om_oss_titles = await fetchApi<Title[]>({
 
         <div class="order-1 lg:order-2">
           <h1 class="max-w-[10ch] text-3xl font-black uppercase text-orange-500 pt-4 sm:pt-20 sm:text-5xl lg:text-[clamp(0.2rem,4.5vw,6rem)] lg:leading-[3.5rem]">
-            {om_oss_titles[0].Title}
+            {about.introTitle}
           </h1>
 
           <h2 class="pt-6 text-2xl font-bold leading-snug text-[#703319] sm:text-3xl lg:text-4xl lg:max-w-md">
-            Baren er drevet av studenter, for studenter
+            {about.introSubtitle}
           </h2>
 
           <p class="pt-6 max-w-[60ch] text-base leading-8 sm:text-lg">
-            {om_oss_descriptions[0].Description}
+            {about.introText}
           </p>
         </div>
       </div>
@@ -58,14 +48,11 @@ const om_oss_titles = await fetchApi<Title[]>({
       <!-- Historie -->
       <section class="mt-16 max-w-2xl lg:max-w-3xl justify-start lg:mt-44 lg:ml-36">
         <h2 class="text-4xl font-extrabold leading-tight text-[#FE710F] sm:text-5xl lg:text-6xl">
-          {om_oss_titles[1].Title}
+          {about.historyTitle}
         </h2>
 
         <div class="mt-8 space-y-6 text-lg leading-8 sm:text-lg lg:leading-10">
-          <p>{om_oss_descriptions[1].Description}</p>
-          <p>{om_oss_descriptions[2].Description}</p>
-          <p>{om_oss_descriptions[3].Description}</p>
-          <p>{om_oss_descriptions[4].Description}</p>
+          {historyParagraphs.map((paragraph) => <p>{paragraph}</p>)}
         </div>
       </section>
     </section>

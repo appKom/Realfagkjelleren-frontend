@@ -1,18 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import type Description from '../interfaces/description';
-import type Title from '../interfaces/title';
-import fetchApi from '../lib/strapi';
+import type HomePage from '../interfaces/homePage';
+import fetchSanity from '../lib/sanity';
 
-const home_page_description = await fetchApi<Description>({
-  endpoint: 'descriptions/lv2pumfuxtu2n6j7cfy4qalp',
-  wrappedByKey: 'data',
-});
-
-const home_page_titles = await fetchApi<Title[]>({
-  endpoint: 'titles?filters[slug][$in][0]=for-studenter&filters[slug][$in][1]=av-studenter',
-  wrappedByKey: 'data',
-});
+const homePage = await fetchSanity<HomePage>(`*[_type == "homePage"][0]{
+  title,
+  subtitle,
+  description,
+  images[]{
+    alt,
+    "url": image.asset->url
+  }
+}`);
 ---
 
 <Layout title="Realfagskjelleren" navbarTextColor="#FFFFFF">
@@ -37,17 +36,14 @@ const home_page_titles = await fetchApi<Title[]>({
     <!-- Innhold -->
     <section class="relative z-10 mx-auto flex min-h-screen max-w-8xl flex-col items-center justify-start px-6 py-36 lg:py-32 text-center sm:px-8 lg:px-12 lg:mt-8">
       <h1 class="font-black leading-relaxed">
-        <span class="block text-5xl md:text-[5rem] lg:text-7xl">
-          {home_page_titles[0].Title}
-        </span>
-        <span class="block text-5xl md:mt-4 md:text-[5rem] lg:text-7xl">
-          {home_page_titles[1].Title}
+        <span class="block whitespace-pre-line text-5xl md:text-[5rem] lg:text-7xl">
+          {homePage.title}
         </span>
       </h1>
 
       <p class="mt-8 max-w-[44ch] text-xl lg:text-2xl leading-7 sm:leading-9">
-        <span class="block">Stedet for alle nerdene på realfagsbygget!</span>
-        <span class="mt-10 block">{home_page_description.Description}</span>
+        <span class="block">{homePage.subtitle}</span>
+        <span class="mt-10 block">{homePage.description}</span>
       </p>
 
       <div class="mt-8">
@@ -57,6 +53,17 @@ const home_page_titles = await fetchApi<Title[]>({
         >
           SE HVA SOM SKJER
         </a>
+      </div>
+
+      <!-- Bilder: enkelt oppsett for na, design fikses senere iht. Figma -->
+      <div class="mt-16 grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
+        {homePage.images.map((img) => (
+          <img
+            src={img.url}
+            alt={img.alt}
+            class="h-48 w-full rounded-xl object-cover"
+          />
+        ))}
       </div>
     </section>
   </main>
