@@ -3,28 +3,35 @@ import fetchApi from '../lib/strapi';
 import type Title from '../interfaces/title';
 import Layout from '../layouts/Layout.astro';
 import type EventItem from '../interfaces/event';
+import fetchSanity from '../lib/sanity';
+import { urlFor } from '../lib/sanityImageUrl';
+ 
+// Start of new implementation of Sanity
+const events = await fetchSanity<EventItem[]>(`*[_type == "event"] | order(date asc) {
+    title,
+    date,
+    description,
+    coverImage {
+        asset ->{
+            _id,
+            url,
+            metadata{ dimensions }
+        },
+        hotspot,
+        crop,
+    },
+    "slug": slug.current,
+    _id,
+}`);
 
-const eventsResponse = await fetchApi<EventItem[]>({
-  endpoint: 'events?populate=coverImage&sort=date:asc',
-  wrappedByKey: 'data',
-});
+// console.log(JSON.stringify(events, null, 2));
 
-const events = eventsResponse ?? [];
+// TODO: test/check if needed (Previously fetched from Strapi?)
+//    Maybe make configurable online?
+const kommendeTitle = 'Kommende';
+const arrangementerTitle = 'Arrangementer';
 
-const events_titles = await fetchApi<Title[]>({
-  endpoint: 'titles?filters[slug][$in][0]=kommende&filters[slug][$in][1]=arrangementer',
-  wrappedByKey: 'data',
-});
 
-const kommendeTitle =
-  (events_titles as any[])?.find((t) => t.slug === 'kommende')?.Title ??
-  events_titles?.[0]?.Title ??
-  'Kommende';
-
-const arrangementerTitle =
-  (events_titles as any[])?.find((t) => t.slug === 'arrangementer')?.Title ??
-  events_titles?.[1]?.Title ??
-  'Arrangementer';
 ---
 
 <Layout title="Realfagskjelleren" navbarTextColor="#FFFFFF">
@@ -60,18 +67,10 @@ const arrangementerTitle =
                 })
               : 'Tid TBA';
 
-            const rawUrl =
-              (e as any)?.coverImage?.url ??
-              (e as any)?.coverImage?.data?.attributes?.url ??
-              null;
-
-            const base = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
-
-            const coverUrl = rawUrl
-              ? rawUrl.startsWith('http')
-                ? rawUrl
-                : `${base}${rawUrl}`
-              : null;
+            // const coverUrl = (e as any)?.coverImage?.asset?.url ?? null;
+            const coverUrl = e.coverImage ?
+                urlFor(e.coverImage).width(330).height(236).fit('crop').bg('f1ece8').url()
+                : null;
 
             return (
               <li class="event-card">
@@ -306,11 +305,12 @@ const arrangementerTitle =
     padding: 20px 12px 20px 0;
   }
 
+  /* Any change to image dimensions must be matched above at const coverUrl decleration.*/
   .event-image {
     width: 100%;
     max-width: 330px;
     height: 236px;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 0;
     display: block;
   }
