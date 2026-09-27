@@ -1,51 +1,36 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PictureCard from "../components/PictureCard.astro";
-import fetchApi from "../lib/strapi";
+import fetchSanity from "../lib/sanity";
 
-const res = await fetchApi<any>({
-  endpoint: "posts?populate=image",
-});
+const pictureWall = await fetchSanity<{
+  images?: {
+    alt?: string;
+    imageUrl?: string;
+  }[];
+}>(`
+  *[_type == "pictureWall"][0] {
+    images[] {
+      alt,
+      "imageUrl": image.asset->url
+    }
+  }
+`);
 
-const STRAPI = (import.meta.env.PUBLIC_STRAPI_URL ?? "http://localhost:1337").replace(/\/$/, "");
+const bgForIndex = (i: number) =>
+  `/cards_backgrounds/bg${(i % 8) + 1}.svg`;
 
-const bgForIndex = (i: number) => `/cards_backgrounds/bg${(i % 8) + 1}.svg`;
+const images = pictureWall?.images ?? [];
 
-const pickBestImageUrl = (img: any): string | null => {
-  if (!img) return null;
-  return (
-    img?.formats?.large?.url ??
-    img?.formats?.medium?.url ??
-    img?.formats?.small?.url ??
-    img?.url ??
-    null
-  );
-};
-
-const data: any[] = Array.isArray(res?.data) ? res.data : [];
-
-const items = data.map((p, idx) => {
-  const caption = String(p?.caption ?? p?.attributes?.caption ?? "");
-  const title = String(p?.title ?? p?.attributes?.title ?? caption ?? "Uten tittel");
-
-  const images = p?.image ?? p?.attributes?.image ?? [];
-  const img = Array.isArray(images) ? images[0] : null;
-
-  const rel = pickBestImageUrl(img); 
-  const imageUrl = rel
-    ? rel.startsWith("http")
-      ? rel
-      : `${STRAPI}${rel.startsWith("/") ? "" : "/"}${rel}`
-    : "/fallback.png";
-  
+const items = images.map((image, idx) => {
   const rotation = (Math.random() * 4 - 2).toFixed(2);
 
   return {
-    title,
-    caption,
-    imageUrl,
+    title: image.alt ?? "Bilde",
+    caption: image.alt ?? "",
+    imageUrl: image.imageUrl ?? "/fallback.png",
     bgUrl: bgForIndex(idx),
-    rotation
+    rotation,
   };
 });
 ---
