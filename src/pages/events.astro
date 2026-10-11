@@ -1,29 +1,19 @@
 ---
-import fetchApi from '../lib/strapi';
 import type Title from '../interfaces/title';
 import Layout from '../layouts/Layout.astro';
-import type EventItem from '../interfaces/event';
+import type EventItem from "../interfaces/event.ts";
+import fetchSanity from "../lib/sanity";
 
-const eventsResponse = await fetchApi<EventItem[]>({
-  endpoint: 'events?populate=coverImage&sort=date:asc',
-  wrappedByKey: 'data',
-});
-
-const events = eventsResponse ?? [];
-
-const events_titles = await fetchApi<Title[]>({
-  endpoint: 'titles?filters[slug][$in][0]=kommende&filters[slug][$in][1]=arrangementer',
-  wrappedByKey: 'data',
-});
+const Events = await fetchSanity<any>(`*[_type == "event"]`);
 
 const kommendeTitle =
-  (events_titles as any[])?.find((t) => t.slug === 'kommende')?.Title ??
-  events_titles?.[0]?.Title ??
+  (Events as any[])?.find((t) => t.slug === 'kommende')?.Title ??
+  Events?.[0]?.Title ??
   'Kommende';
 
 const arrangementerTitle =
-  (events_titles as any[])?.find((t) => t.slug === 'arrangementer')?.Title ??
-  events_titles?.[1]?.Title ??
+  (Events as any[])?.find((t) => t.slug === 'arrangementer')?.Title ??
+  Events?.[1]?.Title ??
   'Arrangementer';
 ---
 
@@ -43,7 +33,7 @@ const arrangementerTitle =
 
       <ul class="events-list">
         {
-          events.map((e: EventItem) => {
+          Events.map((e: EventItem) => {
             const href = `/events/${e.slug ?? e.id}`;
 
             const date = e.date ? new Date(e.date) : null;

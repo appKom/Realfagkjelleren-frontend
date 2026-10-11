@@ -2,16 +2,16 @@
 interface Props {
   title: string;
   description: string;
-  imageUrl: string;
+  Realfagsimage: string;
   bgUrl: string;
 }
 
-const { title, description, imageUrl, bgUrl } = Astro.props;
+const { title, description, Realfagsimage, bgUrl } = Astro.props;
 ---
 
 <article class="menu-card" style={`--bg-url: url(${bgUrl})`}>
   <div class="image-wrap">
-    <img src={imageUrl} alt={title} loading="lazy" />
+    <img src={Realfagsimage} alt={title} loading="lazy" />
   </div>
 
   <div class="text">

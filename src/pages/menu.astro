@@ -1,51 +1,37 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import MenuCard from "../components/MenuCard.astro";
-import fetchApi from "../lib/strapi";
+import fetchSanity from "../lib/sanity";
+import type Drink from "../interfaces/drink.ts";
 
-const res = await fetchApi<any>({
-  endpoint: "drinks?populate=image",
-});
 
-const STRAPI = (import.meta.env.PUBLIC_STRAPI_URL ?? "http://localhost:1337").replace(/\/$/, "");
 
-const bgForIndex = (i: number) => `/cards_backgrounds/bg${(i % 8) + 1}.svg`;
+const menu = await fetchSanity<Drink[]>(`*[_type == "menu"]{
+  title,
+  description,
+  image{
+    asset->{
+      url
+    }
+  }
+}`);
 
-const pickBestImageUrl = (img: any): string | null => {
-  if (!img) return null;
+const bgForIndex = (i: number) =>
+  `/cards_backgrounds/bg${(i % 8) + 1}.svg`;
 
-  return (
-    img?.formats?.large?.url ??
-    img?.formats?.medium?.url ??
-    img?.formats?.small?.url ??
-    img?.url ??
-    null
-  );
-};
+const drinks = menu.map((item, idx) => {
+  const title = item.title ?? "Uten navn";
 
-const data: any[] = Array.isArray(res?.data) ? res.data : [];
+  const description =
+    item.description ?? "Beskrivelse kommer senere";
 
-const drinks = data.map((item, idx) => {
-  const title = String(item?.title ?? item?.attributes?.title ?? "Uten navn");
-  const description = String(
-    item?.description ??
-      item?.attributes?.description ??
-      "Beskrivelse kommer senere"
-  );
-
-  const image = item?.image ?? item?.attributes?.image ?? null;
-  const rel = pickBestImageUrl(image);
-
-  const imageUrl = rel
-    ? rel.startsWith("http")
-      ? rel
-      : `${STRAPI}${rel.startsWith("/") ? "" : "/"}${rel}`
-    : "/fallback.png";
+  const Realfagsimage =
+    item.Realfagsimage ?? "/fallback.png";
 
   return {
     title,
     description,
-    imageUrl,
+    Realfagsimage,
     bgUrl: bgForIndex(idx),
   };
 });
