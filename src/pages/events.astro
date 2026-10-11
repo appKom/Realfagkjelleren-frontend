@@ -4,7 +4,12 @@ import Layout from '../layouts/Layout.astro';
 import type EventItem from "../interfaces/event.ts";
 import fetchSanity from "../lib/sanity";
 
-const Events = await fetchSanity<any>(`*[_type == "event"]`);
+const Events = await fetchSanity<any>(`
+  *[_type == "event"] {
+    ...,
+    "coverImageUrl": coverImage.asset->url
+  }
+`);
 
 const kommendeTitle =
   (Events as any[])?.find((t) => t.slug === 'kommende')?.Title ??
@@ -50,18 +55,7 @@ const arrangementerTitle =
                 })
               : 'Tid TBA';
 
-            const rawUrl =
-              (e as any)?.coverImage?.url ??
-              (e as any)?.coverImage?.data?.attributes?.url ??
-              null;
-
-            const base = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
-
-            const coverUrl = rawUrl
-              ? rawUrl.startsWith('http')
-                ? rawUrl
-                : `${base}${rawUrl}`
-              : null;
+            const coverUrl = (e as any).coverImageUrl ?? null;
 
             return (
               <li class="event-card">
