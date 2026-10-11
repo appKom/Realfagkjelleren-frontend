@@ -41,10 +41,15 @@ const homePage = await fetchSanity<HomePage>(`*[_type == "homePage"][0]{
         </span>
       </h1>
 
-      <p class="mt-8 max-w-[44ch] text-xl lg:text-2xl leading-7 sm:leading-9">
-        <span class="block">{homePage.subtitle}</span>
-        <span class="mt-10 block">{homePage.description}</span>
-      </p>
+      <div class="mt-8 flex flex-col items-center">
+        <p class="text-xl lg:text-2xl leading-7 sm:leading-9">
+          {homePage.subtitle}
+        </p>
+
+        <p class="mt-10 max-w-[50ch] text-xl lg:text-2xl leading-7 sm:leading-9">
+          {homePage.description}
+        </p>
+      </div> 
 
       <div class="mt-8">
         <a
@@ -55,15 +60,42 @@ const homePage = await fetchSanity<HomePage>(`*[_type == "homePage"][0]{
         </a>
       </div>
 
-      <!-- Bilder: enkelt oppsett for na, design fikses senere iht. Figma -->
-      <div class="mt-16 grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
-        {homePage.images.map((img) => (
+      <!-- Bilder -->
+      <div class="relative mx-auto mt-20 h-[330px] w-full max-w-[900px] sm:h-[420px] lg:h-[500px]">
+
+        {homePage.images?.[0] && (
           <img
-            src={img.url}
-            alt={img.alt}
-            class="h-48 w-full rounded-xl object-cover"
+            src={homePage.images[0].url}
+            alt={homePage.images[0].alt}
+            class="absolute left-[2%] top-0 z-10
+                  h-[55%] w-[55%]
+                  rounded-2xl border-4 border-white
+                  object-cover shadow-lg"
           />
-        ))}
+        )}
+
+        {homePage.images?.[1] && (
+          <img
+            src={homePage.images[1].url}
+            alt={homePage.images[1].alt}
+            class="absolute right-[0%] top-[12%] z-20
+                  h-[55%] w-[48%]
+                  rounded-2xl border-4 border-white
+                  object-cover shadow-lg"
+          />
+        )}
+
+        {homePage.images?.[2] && (
+          <img
+            src={homePage.images[2].url}
+            alt={homePage.images[2].alt}
+            class="absolute bottom-10 left-[40%] z-30
+                  h-[43%] w-[42%] -translate-x-1/2
+                  rounded-2xl border-4 border-white
+                  object-cover shadow-lg"
+          />
+        )}
+
       </div>
     </section>
   </main>
