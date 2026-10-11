@@ -41,10 +41,15 @@ const homePage = await fetchSanity<HomePage>(`*[_type == "homePage"][0]{
         </span>
       </h1>
 
-      <p class="mt-8 max-w-[44ch] text-xl lg:text-2xl leading-7 sm:leading-9">
-        <span class="block">{homePage.subtitle}</span>
-        <span class="mt-10 block">{homePage.description}</span>
-      </p>
+      <div class="mt-8 flex flex-col items-center">
+        <p class="text-xl lg:text-2xl leading-7 sm:leading-9">
+          {homePage.subtitle}
+        </p>
+
+        <p class="mt-10 max-w-[50ch] text-xl lg:text-2xl leading-7 sm:leading-9">
+          {homePage.description}
+        </p>
+      </div> 
 
       <div class="mt-8">
         <a
