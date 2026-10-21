@@ -28,11 +28,11 @@ const arrangementerTitle =
     <img src="/flekkOH.svg" alt="" aria-hidden="true" class="flekk flekk-top-right" />
     <img src="/flekkNH.svg" alt="" aria-hidden="true" class="flekk flekk-bottom-right" />
 
-    <div class="content-layer">
+    <div class="content-layer relative">
       <div class="title-wrap">
         <h1 class="page-title pt-20 text-center text-white text-4xl leading-tight">
-          <span class="block text-7xl">{kommendeTitle}</span>
-          <span class="block text-7xl">{arrangementerTitle}</span>
+          <span class="block text-6xl md:text-7xl">{kommendeTitle}</span>
+          <span class="block text-6xl md:text-7xl">{arrangementerTitle}</span>
         </h1>
       </div>
 
@@ -168,18 +168,19 @@ const arrangementerTitle =
 </Layout>
 
 <style>
-  .events-page {
-    position: relative;
-    min-height: 100vh;
-    overflow-x: hidden;
-    background: #fe710f;
-    padding-top: 84px;
-    padding-bottom: 60px;
-  }
+.events-page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #fe710f;
+  padding-top: 84px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
+}
 
   .content-layer {
     position: relative;
-    z-index: 2;
+    z-index: 0;
   }
 
   .flekk {
@@ -353,7 +354,7 @@ const arrangementerTitle =
   }
 
   .event-description {
-    max-width: 36ch;
+    max-width: 50ch;
     margin: 0;
     color: #8d8d8d;
     font-size: 0.98rem;
@@ -404,7 +405,7 @@ const arrangementerTitle =
     }
 
     .events-list {
-      padding: 0 1rem;
+      padding: 0 1.5rem;
       gap: 20px;
     }
 
