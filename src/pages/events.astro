@@ -3,18 +3,17 @@ import fetchApi from '../lib/strapi';
 import type Title from '../interfaces/title';
 import Layout from '../layouts/Layout.astro';
 import type EventItem from '../interfaces/event';
+import fetchSanity from '../lib/sanity';
 
-const eventsResponse = await fetchApi<EventItem[]>({
-  endpoint: 'events?populate=coverImage&sort=date:asc',
-  wrappedByKey: 'data',
-});
+const eventsResponse = await fetchSanity<EventItem[]>(
+  'events?populate=coverImage&sort=date:asc'
+);
 
 const events = eventsResponse ?? [];
 
-const events_titles = await fetchApi<Title[]>({
-  endpoint: 'titles?filters[slug][$in][0]=kommende&filters[slug][$in][1]=arrangementer',
-  wrappedByKey: 'data',
-});
+const events_titles = await fetchSanity<Title[]>(
+  'titles?filters[slug][$in][0]=kommende&filters[slug][$in][1]=arrangementer',
+);
 
 const kommendeTitle =
   (events_titles as any[])?.find((t) => t.slug === 'kommende')?.Title ??
