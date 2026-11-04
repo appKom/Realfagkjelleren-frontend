@@ -14,28 +14,28 @@ const historyParagraphs = about.historyText
 <Layout title="Om Oss" navbarTextColor="#FF5733" navbarMobileWhite>
   <main class="relative overflow-hidden bg-[#f6f6f6] text-black font-['Gantari']">
 
-    <img src="/flekk_omossOV.svg" alt="" class="pointer-events-none absolute top-0 left-0 w-32 md:w-40 lg:w-80" />
+    <img src="/flekk_omossOV.svg" alt="" class="pointer-events-none absolute top-0 left-0 w-32 md:w-40 min-[1150px]:w-80" />
     <img src="/flekk_omossOH.svg" alt="" class="pointer-events-none absolute top-0 right-0 w-20 md:w-40 lg:w-38" />
     <img src="/flekk_omossMV.svg" alt="" class="pointer-events-none absolute left-0 top-[18%] sm:top-[20%] lg:top-[25%] w-32 md:w-52 lg:w-72 z-50" />
-    <img src="/flekk_omossNH.svg" alt="" class="pointer-events-none absolute right-0 bottom-[23%] sm:bottom-[27%] lg:bottom-[27%] w-32 md:w-52 lg:w-64" />
+    <img src="/flekk_omossNH.svg" alt="" class="pointer-events-none absolute right-0 bottom-[23%] sm:bottom-[27%] lg:bottom-[27%] w-24 md:w-32 lg:w-40 2xl:w-64" />
 
     <section class="relative z-10 mt-10 max-w-6xl px-6 sm:px-8 sm:mt-20 lg:px-20 pt-20 md:pt-0 pb-20">
-      <!-- Hero -->
-      <div class="grid lg:grid-cols-[auto_1fr] items-start lg:gap-20">
-        <div class="mx-auto mt-16 order-2 lg:order-1 lg:mx-0">
+      <!-- Hero: stables helt til 1150px, slik at teksten ikke havner bak blobben -->
+      <div class="grid min-[1150px]:grid-cols-[auto_1fr] items-start min-[1150px]:gap-16">
+        <div class="mx-auto mt-16 order-2 min-[1150px]:order-1 min-[1150px]:mx-0">
           <img
             src="/bar_bilde.png"
             alt="bilde av baren"
-            class="max-w-[465px] w-[300px] sm:w-[335px] lg:w-[450px] rounded-2xl object-cover shadow-sm"
+            class="max-w-[465px] w-[300px] sm:w-[380px] min-[1150px]:w-[420px] rounded-2xl object-cover shadow-sm"
           />
         </div>
 
-        <div class="order-1 lg:order-2">
-          <h1 class="max-w-[10ch] text-3xl font-black uppercase text-orange-500 pt-4 sm:pt-20 sm:text-5xl lg:text-[clamp(0.2rem,4.5vw,6rem)] lg:leading-[3.5rem]">
+        <div class="order-1 min-w-0 min-[1150px]:order-2 min-[1150px]:pr-10">
+          <h1 class="max-w-[10ch] text-[clamp(1.75rem,7.5vw,3rem)] leading-[1.1] font-black uppercase text-orange-500 pt-4 sm:pt-20 md:pt-28 lg:pt-32 min-[1150px]:pt-20 min-[1150px]:text-[clamp(2.5rem,3.6vw,4.5rem)]">
             {about.introTitle}
           </h1>
 
-          <h2 class="pt-6 text-2xl font-bold leading-snug text-[#703319] sm:text-3xl lg:text-4xl lg:max-w-md">
+          <h2 class="pt-6 text-2xl font-bold leading-snug text-[#703319] sm:text-3xl min-[1150px]:text-4xl min-[1150px]:max-w-md">
             {about.introSubtitle}
           </h2>
 
@@ -46,7 +46,7 @@ const historyParagraphs = about.historyText
       </div>
 
       <!-- Historie -->
-      <section class="mt-16 max-w-2xl lg:max-w-3xl justify-start lg:mt-44 lg:ml-36">
+      <section class="mt-16 max-w-2xl md:pr-20 lg:max-w-3xl lg:mt-44 min-[1150px]:ml-36 2xl:pr-0">
         <h2 class="text-4xl font-extrabold leading-tight text-[#FE710F] sm:text-5xl lg:text-6xl">
           {about.historyTitle}
         </h2>
@@ -58,7 +58,7 @@ const historyParagraphs = about.historyText
     </section>
 
     <!-- Kontakt + kart -->
-    <section class="relative z-10 grid grid-cols-1 lg:grid-cols-2 lg: mt-36">
+    <section class="relative z-10 grid grid-cols-1 lg:grid-cols-2 mt-36">
       <div class="bg-orange-500 px-6 py-10 text-white sm:px-8 lg:px-12 lg:py-14">
         <h2 class="max-w-[20ch] text-3xl font-bold leading-tight sm:text-4xl">
           Vi holder til i kjellerne på Moholt
