@@ -48,44 +48,46 @@ const drinks = data.map((item, idx) => ({
   </main>
 </Layout>
 
+
 <style>
   main {
     background-color: #ffffff;
     width: 100%;
-    margin: 0 auto;
-    padding: 0 20px;
     min-height: 100vh;
     font-family: "Gantari", sans-serif;
+    padding: 0 20px;
   }
 
   .content {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1060px;
     margin: 0 auto;
-    padding: 9rem 2rem 3rem;
+    padding: 7rem 0 3rem;
   }
 
   .menu-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 22px;
-    align-items: stretch;
+    gap: 36px 34px;
+    align-items: start;
   }
 
   @media (max-width: 900px) {
     .content {
-      padding-top: 8rem;
+      max-width: 650px;
+      padding-top: 7rem;
     }
 
     .menu-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px;
+      gap: 24px;
     }
   }
 
   @media (max-width: 500px) {
     .content {
-      padding: 7rem 1rem 2rem;
+      max-width: 280px;
+      padding: 6rem 0 2rem;
     }
 
     .menu-grid {
