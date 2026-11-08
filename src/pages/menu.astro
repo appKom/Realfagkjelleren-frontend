@@ -2,7 +2,6 @@
 import Layout from "../layouts/Layout.astro";
 import MenuCard from "../components/MenuCard.astro";
 import fetchSanity from '../lib/sanity';
-import type Drinks from "../interfaces/drink";
 
 const drinksFromSanity = await fetchSanity<Array<{
   title?: string;
