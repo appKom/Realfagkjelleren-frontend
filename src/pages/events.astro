@@ -1,28 +1,24 @@
 ---
-import fetchApi from '../lib/strapi';
 import type Title from '../interfaces/title';
 import Layout from '../layouts/Layout.astro';
-import type EventItem from '../interfaces/event';
-import fetchSanity from '../lib/sanity';
+import type EventItem from "../interfaces/event.ts";
+import fetchSanity from "../lib/sanity";
 
-const eventsResponse = await fetchSanity<EventItem[]>(
-  'events?populate=coverImage&sort=date:asc'
-);
-
-const events = eventsResponse ?? [];
-
-const events_titles = await fetchSanity<Title[]>(
-  'titles?filters[slug][$in][0]=kommende&filters[slug][$in][1]=arrangementer',
-);
+const Events = await fetchSanity<any>(`
+  *[_type == "event"] {
+    ...,
+    "coverImageUrl": coverImage.asset->url
+  }
+`);
 
 const kommendeTitle =
-  (events_titles as any[])?.find((t) => t.slug === 'kommende')?.Title ??
-  events_titles?.[0]?.Title ??
+  (Events as any[])?.find((t) => t.slug === 'kommende')?.Title ??
+  Events?.[0]?.Title ??
   'Kommende';
 
 const arrangementerTitle =
-  (events_titles as any[])?.find((t) => t.slug === 'arrangementer')?.Title ??
-  events_titles?.[1]?.Title ??
+  (Events as any[])?.find((t) => t.slug === 'arrangementer')?.Title ??
+  Events?.[1]?.Title ??
   'Arrangementer';
 ---
 
@@ -32,17 +28,17 @@ const arrangementerTitle =
     <img src="/flekkOH.svg" alt="" aria-hidden="true" class="flekk flekk-top-right" />
     <img src="/flekkNH.svg" alt="" aria-hidden="true" class="flekk flekk-bottom-right" />
 
-    <div class="content-layer">
+    <div class="content-layer relative">
       <div class="title-wrap">
         <h1 class="page-title pt-20 text-center text-white text-4xl leading-tight">
-          <span class="block text-7xl">{kommendeTitle}</span>
-          <span class="block text-7xl">{arrangementerTitle}</span>
+          <span class="block text-6xl md:text-7xl">{kommendeTitle}</span>
+          <span class="block text-6xl md:text-7xl">{arrangementerTitle}</span>
         </h1>
       </div>
 
       <ul class="events-list">
         {
-          events.map((e: EventItem) => {
+          Events.map((e: EventItem) => {
             const href = `/events/${e.slug ?? e.id}`;
 
             const date = e.date ? new Date(e.date) : null;
@@ -59,18 +55,7 @@ const arrangementerTitle =
                 })
               : 'Tid TBA';
 
-            const rawUrl =
-              (e as any)?.coverImage?.url ??
-              (e as any)?.coverImage?.data?.attributes?.url ??
-              null;
-
-            const base = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
-
-            const coverUrl = rawUrl
-              ? rawUrl.startsWith('http')
-                ? rawUrl
-                : `${base}${rawUrl}`
-              : null;
+            const coverUrl = (e as any).coverImageUrl ?? null;
 
             return (
               <li class="event-card">
@@ -183,18 +168,19 @@ const arrangementerTitle =
 </Layout>
 
 <style>
-  .events-page {
-    position: relative;
-    min-height: 100vh;
-    overflow-x: hidden;
-    background: #fe710f;
-    padding-top: 84px;
-    padding-bottom: 60px;
-  }
+.events-page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #fe710f;
+  padding-top: 84px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
+}
 
   .content-layer {
     position: relative;
-    z-index: 2;
+    z-index: 0;
   }
 
   .flekk {
@@ -368,7 +354,7 @@ const arrangementerTitle =
   }
 
   .event-description {
-    max-width: 36ch;
+    max-width: 50ch;
     margin: 0;
     color: #8d8d8d;
     font-size: 0.98rem;
@@ -419,7 +405,7 @@ const arrangementerTitle =
     }
 
     .events-list {
-      padding: 0 1rem;
+      padding: 0 1.5rem;
       gap: 20px;
     }
 
