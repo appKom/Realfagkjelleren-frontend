@@ -5,7 +5,7 @@ import type EventItem from "../interfaces/event.ts";
 import fetchSanity from "../lib/sanity";
 
 const Events = await fetchSanity<any>(`
-  *[_type == "event"] {
+  *[_type == "event" && date >= now()] | order(date asc) {
     ...,
     "coverImageUrl": coverImage.asset->url
   }
