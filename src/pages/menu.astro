@@ -1,40 +1,38 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import MenuCard from "../components/MenuCard.astro";
-import fetchSanity from "../lib/sanity";
-import type Drink from "../interfaces/drink.ts";
+import fetchSanity from '../lib/sanity';
 
-
-
-const menu = await fetchSanity<Drink[]>(`*[_type == "menu"]{
-  title,
-  description,
-  image{
-    asset->{
-      url
+const drinksFromSanity = await fetchSanity<Array<{
+  title?: string;
+  pris?: string;
+  description?: string;
+  imageUrl?: string | null;
+}>>(`
+    *[_type == "Drinks"] {
+      title,
+      pris,
+      description,
+        "imageUrl": Realfagsimage.asset->url
     }
-  }
-}`);
+`);
+
+
 
 const bgForIndex = (i: number) =>
   `/cards_backgrounds/bg${(i % 8) + 1}.svg`;
 
-const drinks = menu.map((item, idx) => {
-  const title = item.title ?? "Uten navn";
+const data = Array.isArray(drinksFromSanity)
+  ? drinksFromSanity
+  : [];
 
-  const description =
-    item.description ?? "Beskrivelse kommer senere";
-
-  const Realfagsimage =
-    item.Realfagsimage ?? "/fallback.png";
-
-  return {
-    title,
-    description,
-    Realfagsimage,
-    bgUrl: bgForIndex(idx),
-  };
-});
+const drinks = data.map((item, idx) => ({
+  title: item.title ?? "Uten navn",
+  pris: item.pris ?? "",
+  description: item.description ?? "Beskrivelse kommer senere...",
+  imageUrl: item.imageUrl ?? "/fallback.png",
+  bgUrl: bgForIndex(idx),
+}));
 ---
 
 <Layout title="Menu" navbarTextColor="#FE710F">
@@ -49,52 +47,51 @@ const drinks = menu.map((item, idx) => {
   </main>
 </Layout>
 
+
 <style>
   main {
     background-color: #ffffff;
     width: 100%;
     min-height: 100vh;
     font-family: "Gantari", sans-serif;
+    padding: 0 20px;
   }
 
   .content {
-    max-width: 1280px;
+    width: 100%;
+    max-width: 1060px;
     margin: 0 auto;
-    padding: 11rem 2rem 5rem;
+    padding: 7rem 0 3rem;
   }
 
   .menu-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(220px, 1fr));
-    gap: 3rem 2.5rem;
-    justify-items: center;
-  }
-
-  @media (max-width: 1200px) {
-    .menu-grid {
-      grid-template-columns: repeat(3, minmax(220px, 1fr));
-    }
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 36px 34px;
+    align-items: start;
   }
 
   @media (max-width: 900px) {
     .content {
-      padding-top: 9rem;
+      max-width: 650px;
+      padding-top: 7rem;
     }
 
     .menu-grid {
-      grid-template-columns: repeat(2, minmax(220px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
     }
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 500px) {
     .content {
-      padding-left: 1rem;
-      padding-right: 1rem;
+      max-width: 280px;
+      padding: 6rem 0 2rem;
     }
 
     .menu-grid {
       grid-template-columns: 1fr;
+      gap: 20px;
     }
   }
 </style>

@@ -1,16 +1,7 @@
 export default interface Drink {
-      Realfagsimage: string;
-      title: string;
-      pris: string;
-      description: string;
+  title: string;
+  pris: string;
+  description: string;
+  imageUrl: string;
+  bgUrl: string;
 }
-
-  
-
-
-
-
-
-  
-
-
